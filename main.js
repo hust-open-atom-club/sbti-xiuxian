@@ -718,7 +718,7 @@
         home.innerHTML =
             '<div class="home-hero">' +
                 '<h1>SBTI 测试，但红尘修仙版</h1>' +
-                '<p class="subtitle">测测你的灵根和资质，能否走上修仙大道？</p>' +
+                '<p class="subtitle">测测你的灵根和资质，能否走上修仙大道？<br><em style="font-size:12px;color:#a38b5c">落子无悔，你的选择没有回头路</em></p>' +
             '</div>' +
             '<div class="home-info">' +
                 '<div class="home-info-card"><span class="info-icon">🔮</span><span class="info-text">五行灵根<br>金木水火土</span></div>' +
