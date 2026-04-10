@@ -703,7 +703,7 @@
         if (!home) return;
         home.innerHTML =
             '<div class="home-hero">' +
-                '<h1>SBIT 测试，但修仙版</h1>' +
+                '<h1>SBIT 测试，但红尘修仙版</h1>' +
                 '<p class="subtitle">测测你的灵根和资质，能否走上修仙大道？<br>数据完全本地计算，不回传</p>' +
             '</div>' +
             '<button class="btn btn-primary" id="start-btn" type="button">开卷测灵根</button>' +
