@@ -482,9 +482,11 @@
     const PORTRAIT_SVG_TEMPLATE =
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 320" role="img" aria-label="灵根人物立像">' +
         '<defs><style>' +
-        '.paper{fill:#f4ead3}' +
-        '.pao{fill:var(--pao-color,#8b1a1a)}' +
-        '.skin{fill:#f8e1c4}' +
+        '.paper{fill:url(#paperGrad)}' +
+        '.pao{fill:url(#paoGrad)}' +
+        '.pao-sleeve-l{fill:url(#paoGradL)}' +
+        '.pao-sleeve-r{fill:url(#paoGradR)}' +
+        '.skin{fill:url(#skinGrad)}' +
         '.hair{fill:#1a1208}' +
         '.ink{fill:#3b2418}' +
         '.fu{stroke:var(--fu-color,#8b1a1a);fill:none;stroke-width:1.5}' +
@@ -492,7 +494,45 @@
         '.line-soft{stroke:#a38b5c;fill:none;stroke-width:1.2}' +
         'g.acc,g.bg{display:none}' +
         'g.acc.on,g.bg.on{display:inline}' +
-        '</style></defs>' +
+        '</style>' +
+        '<radialGradient id="paperGrad" cx="50%" cy="40%" r="60%">' +
+            '<stop offset="0%" stop-color="#faf5e8"/>' +
+            '<stop offset="100%" stop-color="#e8dcc2"/>' +
+        '</radialGradient>' +
+        '<radialGradient id="skinGrad" cx="45%" cy="40%" r="55%">' +
+            '<stop offset="0%" stop-color="#fae8cc"/>' +
+            '<stop offset="70%" stop-color="#f0d4a8"/>' +
+            '<stop offset="100%" stop-color="#e0c090"/>' +
+        '</radialGradient>' +
+        '<linearGradient id="paoGrad" x1="0" y1="0" x2="1" y2="1">' +
+            '<stop offset="0%" stop-color="var(--pao-color,#8b1a1a)"/>' +
+            '<stop offset="35%" stop-color="var(--pao-light,#b94a4a)"/>' +
+            '<stop offset="65%" stop-color="var(--pao-color,#8b1a1a)"/>' +
+            '<stop offset="100%" stop-color="var(--pao-dark,#5a0e0e)"/>' +
+        '</linearGradient>' +
+        '<linearGradient id="paoGradL" x1="0" y1="0" x2="1" y2="0.5">' +
+            '<stop offset="0%" stop-color="var(--pao-dark,#5a0e0e)"/>' +
+            '<stop offset="60%" stop-color="var(--pao-color,#8b1a1a)"/>' +
+            '<stop offset="100%" stop-color="var(--pao-dark,#5a0e0e)"/>' +
+        '</linearGradient>' +
+        '<linearGradient id="paoGradR" x1="1" y1="0" x2="0" y2="0.5">' +
+            '<stop offset="0%" stop-color="var(--pao-dark,#5a0e0e)"/>' +
+            '<stop offset="60%" stop-color="var(--pao-color,#8b1a1a)"/>' +
+            '<stop offset="100%" stop-color="var(--pao-dark,#5a0e0e)"/>' +
+        '</linearGradient>' +
+        '<radialGradient id="auraGlow" cx="50%" cy="55%" r="40%">' +
+            '<stop offset="0%" stop-color="var(--fu-color,#8b1a1a)" stop-opacity="0.18"/>' +
+            '<stop offset="70%" stop-color="var(--fu-color,#8b1a1a)" stop-opacity="0.06"/>' +
+            '<stop offset="100%" stop-color="var(--fu-color,#8b1a1a)" stop-opacity="0"/>' +
+        '</radialGradient>' +
+        '<filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">' +
+            '<feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>' +
+            '<feOffset dx="2" dy="3" result="offsetBlur"/>' +
+            '<feFlood flood-color="#3b2418" flood-opacity="0.15"/>' +
+            '<feComposite in2="offsetBlur" operator="in"/>' +
+            '<feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>' +
+        '</filter>' +
+        '</defs>' +
         '<rect class="paper" width="240" height="320" rx="6"/>' +
         // ========== Backgrounds (hidden by default) ==========
         '<g class="bg" data-bg="waves">' +
@@ -567,16 +607,38 @@
         '</g>' +
         '<g class="bg" data-bg="blank"></g>' +
         // ========== Base Taoist figure ==========
-        '<ellipse cx="120" cy="42" rx="6" ry="8" class="hair"/>' +
+        '<ellipse cx="120" cy="190" rx="70" ry="120" fill="url(#auraGlow)"/>' +
+        '<g filter="url(#softShadow)">' +
+        '<ellipse cx="120" cy="42" rx="7" ry="9" class="hair"/>' +
         '<circle cx="120" cy="80" r="28" class="skin"/>' +
-        '<path class="hair" d="M92 70 Q 92 55 105 50 Q 120 46 135 50 Q 148 55 148 70 L 148 62 Q 120 50 92 62 Z"/>' +
-        '<circle cx="111" cy="80" r="1.8" class="ink"/>' +
-        '<circle cx="129" cy="80" r="1.8" class="ink"/>' +
-        '<path d="M114 93 Q 120 97 126 93" stroke="#3b2418" stroke-width="1.2" fill="none"/>' +
+        '<ellipse cx="107" cy="74" rx="8" ry="4" fill="#fff" opacity="0.15"/>' +
+        '<ellipse cx="133" cy="74" rx="8" ry="4" fill="#fff" opacity="0.12"/>' +
+        '<path class="hair" d="M90 72 Q 90 52 105 47 Q 120 42 135 47 Q 150 52 150 72 L 150 60 Q 148 48 120 44 Q 92 48 90 60 Z"/>' +
+        '<path d="M94 68 Q 92 58 105 52 Q 120 47 135 52 Q 148 58 146 68" fill="#2a1c0e" opacity="0.5"/>' +
+        '<ellipse cx="110" cy="79" rx="5" ry="4" fill="#fff" opacity="0.9"/>' +
+        '<ellipse cx="130" cy="79" rx="5" ry="4" fill="#fff" opacity="0.9"/>' +
+        '<circle cx="111" cy="80" r="2" class="ink"/>' +
+        '<circle cx="129" cy="80" r="2" class="ink"/>' +
+        '<circle cx="111.5" cy="79.2" r="0.6" fill="#fff" opacity="0.8"/>' +
+        '<circle cx="129.5" cy="79.2" r="0.6" fill="#fff" opacity="0.8"/>' +
+        '<path d="M116 88 Q 120 86 124 88" stroke="#c49060" stroke-width="0.8" fill="none" opacity="0.5"/>' +
+        '<path d="M115 94 Q 120 98 125 94" stroke="#3b2418" stroke-width="1.2" fill="none"/>' +
+        '<ellipse cx="100" cy="88" rx="5" ry="3.5" fill="#e8b890" opacity="0.4"/>' +
+        '<ellipse cx="140" cy="88" rx="5" ry="3.5" fill="#e8b890" opacity="0.4"/>' +
         '<path class="pao" d="M82 118 Q 120 108 158 118 L 180 300 L 60 300 Z"/>' +
-        '<path class="pao" d="M58 140 Q 40 200 55 255 L 72 255 L 80 148 Z"/>' +
-        '<path class="pao" d="M182 140 Q 200 200 185 255 L 168 255 L 160 148 Z"/>' +
+        '<path d="M95 135 Q 100 200 92 280 L 85 300" stroke="var(--pao-dark,#5a0e0e)" stroke-width="1" fill="none" opacity="0.35"/>' +
+        '<path d="M145 135 Q 140 200 148 280 L 155 300" stroke="var(--pao-dark,#5a0e0e)" stroke-width="1" fill="none" opacity="0.35"/>' +
+        '<path d="M110 120 Q 115 220 108 300" stroke="var(--pao-dark,#5a0e0e)" stroke-width="0.7" fill="none" opacity="0.2"/>' +
+        '<path d="M130 120 Q 125 220 132 300" stroke="var(--pao-dark,#5a0e0e)" stroke-width="0.7" fill="none" opacity="0.2"/>' +
+        '<path class="pao-sleeve-l" d="M58 140 Q 40 200 55 255 L 72 255 L 80 148 Z"/>' +
+        '<path d="M65 150 Q 58 200 62 248" stroke="var(--pao-dark,#5a0e0e)" stroke-width="0.7" fill="none" opacity="0.3"/>' +
+        '<path class="pao-sleeve-r" d="M182 140 Q 200 200 185 255 L 168 255 L 160 148 Z"/>' +
+        '<path d="M175 150 Q 182 200 178 248" stroke="var(--pao-dark,#5a0e0e)" stroke-width="0.7" fill="none" opacity="0.3"/>' +
+        '<path d="M82 118 Q 120 112 158 118" stroke="var(--pao-light,#b94a4a)" stroke-width="1" fill="none" opacity="0.4"/>' +
+        '<path d="M82 118 Q 120 124 158 118" stroke="var(--pao-dark,#5a0e0e)" stroke-width="0.8" fill="none" opacity="0.5"/>' +
         '<path class="fu" d="M105 160 L 135 160 M 105 180 L 135 180 M 105 200 L 135 200 M 110 140 L 130 140"/>' +
+        '<ellipse cx="120" cy="300" rx="62" ry="6" fill="#3b2418" opacity="0.08"/>' +
+        '</g>' +
         // ========== Accessories (hidden by default) ==========
         '<g class="acc" data-acc="sword">' +
             '<rect x="175" y="120" width="4" height="130" class="ink"/>' +
@@ -670,10 +732,31 @@
             throw new Error('背景值不在枚举白名单: ' + config.背景);
         }
 
+        function lightenHex(hex, pct) {
+            var r = parseInt(hex.slice(1, 3), 16);
+            var g = parseInt(hex.slice(3, 5), 16);
+            var b = parseInt(hex.slice(5, 7), 16);
+            r = Math.min(255, Math.round(r + (255 - r) * pct));
+            g = Math.min(255, Math.round(g + (255 - g) * pct));
+            b = Math.min(255, Math.round(b + (255 - b) * pct));
+            return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+        function darkenHex(hex, pct) {
+            var r = parseInt(hex.slice(1, 3), 16);
+            var g = parseInt(hex.slice(3, 5), 16);
+            var b = parseInt(hex.slice(5, 7), 16);
+            r = Math.max(0, Math.round(r * (1 - pct)));
+            g = Math.max(0, Math.round(g * (1 - pct)));
+            b = Math.max(0, Math.round(b * (1 - pct)));
+            return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+        var paoLight = lightenHex(config.袍色, 0.3);
+        var paoDark  = darkenHex(config.袍色, 0.35);
+
         let svg = PORTRAIT_SVG_TEMPLATE;
         svg = svg.replace(
             '<svg xmlns',
-            '<svg style="--pao-color: ' + config.袍色 + '; --fu-color: ' + config.符文色 + ';" xmlns'
+            '<svg style="--pao-color: ' + config.袍色 + '; --pao-light: ' + paoLight + '; --pao-dark: ' + paoDark + '; --fu-color: ' + config.符文色 + ';" xmlns'
         );
         svg = svg.replace(
             '<g class="bg" data-bg="' + config.背景 + '">',
