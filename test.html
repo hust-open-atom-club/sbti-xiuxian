@@ -315,10 +315,10 @@ window.fetch = window.__origFetch;
     /* =============== Content Lint =============== */
     log('info', '<h2>Content Lint — production data/*.md</h2>');
 
-    await asyncTest('load + parse data/questions.md (expect 16)', async function () {
+    await asyncTest('load + parse data/questions.md (expect 24)', async function () {
         var text = await LT.loadMarkdown('data/questions.md');
         var qs = LT.parseQuestions(text);
-        assert(qs.length === 16, 'got ' + qs.length);
+        assert(qs.length === 24, 'got ' + qs.length);
     });
 
     await asyncTest('load + parse data/results.md (expect 25 + default)', async function () {
