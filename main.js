@@ -764,31 +764,53 @@
                 '</button>';
         }
 
+        var navHtml =
+            '<div class="quiz-nav">' +
+                (state.cursor > 0
+                    ? '<button class="btn quiz-nav-btn" id="quiz-prev" type="button">← 上一题</button>'
+                    : '<span></span>') +
+                (state.answers[state.cursor] !== undefined
+                    ? '<button class="btn btn-primary quiz-nav-btn" id="quiz-next" type="button">下一题 →</button>'
+                    : '') +
+            '</div>';
+
         quiz.innerHTML =
             '<div class="quiz-progress">' +
                 '<span class="label">第 ' + (state.cursor + 1) + ' 问 / 共 ' + total + '</span>' +
                 '<div class="progress-bar"><i style="width: ' + progress + '%"></i></div>' +
             '</div>' +
             '<p class="quiz-prompt">' + escapeHtml(q.prompt) + '</p>' +
-            '<div class="options" role="radiogroup">' + optionsHtml + '</div>';
+            '<div class="options" role="radiogroup">' + optionsHtml + '</div>' +
+            navHtml;
 
-        const options = quiz.querySelectorAll('.option');
+        var options = quiz.querySelectorAll('.option');
         options.forEach(function (opt) {
             opt.addEventListener('click', function () {
                 handleOption(parseInt(opt.getAttribute('data-index'), 10));
             });
+        });
+        // Highlight previously selected option
+        if (state.answers[state.cursor] !== undefined) {
+            var selected = quiz.querySelector('.option[data-index="' + state.answers[state.cursor] + '"]');
+            if (selected) selected.classList.add('selected');
+        }
+        var prevBtn = document.getElementById('quiz-prev');
+        if (prevBtn) prevBtn.addEventListener('click', function () {
+            if (state.cursor > 0) { state.cursor--; renderQuiz(); }
+        });
+        var nextBtn = document.getElementById('quiz-next');
+        if (nextBtn) nextBtn.addEventListener('click', function () {
+            state.cursor++;
+            if (state.cursor >= state.questions.length) { finalizeQuiz(); }
+            else { renderQuiz(); }
         });
         if (options[0]) options[0].focus();
     }
 
     function handleOption(choice) {
         state.answers[state.cursor] = choice;
-        state.cursor += 1;
-        if (state.cursor >= state.questions.length) {
-            finalizeQuiz();
-        } else {
-            renderQuiz();
-        }
+        // Re-render to show selected state + next button (don't auto-advance)
+        renderQuiz();
     }
 
     function handleKeydown(e) {
