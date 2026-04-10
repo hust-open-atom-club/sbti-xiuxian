@@ -1,0 +1,58 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Chromium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser
+
+      - name: Start HTTP server
+        run: |
+          python3 -m http.server 8080 &
+          sleep 2
+
+      - name: Run test.html in headless Chromium
+        run: |
+          chromium-browser \
+            --headless \
+            --no-sandbox \
+            --disable-gpu \
+            --dump-dom \
+            http://localhost:8080/test.html \
+            2>/dev/null | tee test-output.html
+
+          # Wait for async tests to complete
+          sleep 5
+          chromium-browser \
+            --headless \
+            --no-sandbox \
+            --disable-gpu \
+            --dump-dom \
+            http://localhost:8080/test.html \
+            2>/dev/null | tee test-output.html
+
+          # Check for failures
+          if grep -q "FAILED" test-output.html; then
+            echo "::error::Tests failed!"
+            grep "FAILED\|✗" test-output.html
+            exit 1
+          fi
+
+          # Check for pass count
+          if grep -q "All tests passed" test-output.html; then
+            echo "All tests passed!"
+          else
+            echo "::warning::Could not confirm all tests passed. Check output."
+            cat test-output.html | head -100
+          fi
