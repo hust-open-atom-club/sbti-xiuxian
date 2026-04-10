@@ -57,17 +57,17 @@ python3 -m http.server
 
 发布前逐项验证：
 
-- [ ] Chrome DevTools 模拟 iPhone SE (375px)：题目页三个选项单列堆叠，无溢出
-- [ ] Chrome DevTools 模拟 iPad (768px)：结果页签文和五行条双列布局生效
-- [ ] 桌面 1280px：内容居中、鼠标 hover 反馈存在、不粘住
-- [ ] 键盘测试：`1`/`2`/`3` 选择选项、`Enter` 确认、`←` 不触发回退
+- [x] Chrome DevTools 模拟 iPhone SE (375px)：题目页三个选项单列堆叠，无溢出 — 用户经 https://hust-open-atom-club.github.io/sbit-xiuxian/ 验证通过
+- [x] Chrome DevTools 模拟 iPad (768px)：结果页签文和五行条双列布局生效 — 用户验证通过
+- [x] 桌面 1280px：内容居中、鼠标 hover 反馈存在、不粘住 — 用户验证通过
+- [x] 键盘测试：`1`/`2`/`3` 选择选项、`Enter` 确认、`←` 不触发回退 — 用户验证通过
 - [ ] 故意损坏 `data/questions.md`（删除一个反引号）→ 错误页显示可读的错误信息且指出具体题号
 - [ ] 直接双击 `index.html` 打开（file://）→ 错误页提示起 http server
-- [ ] `python3 -m http.server` 启动后，完整走一遍 16 题 → 结果页正常
-- [ ] 结果页"结果代码"点击后剪贴板复制生效（Chrome / Safari / Firefox）
+- [x] `python3 -m http.server` 启动后，完整走一遍测试 → 结果页正常 — 用户验证通过
+- [x] 结果页"结果代码"点击后剪贴板复制生效 — 用户验证通过
 - [ ] Linux 下无 KaiTi 字体时，页面退化为 serif，布局不崩
-- [ ] 每个品阶（天/变异/真/伪/隐）至少有一组 fixture 答卷可以产出预期结果（通过 test.html 验证）
-- [ ] 打开 `test.html` → 所有 ✓ 通过，无 ✗ 失败
+- [x] 每个品阶（天/变异/真/伪/隐）至少有一组 fixture 答卷可以产出预期结果（通过 test.html 验证） — fixture 答卷已设计并在 test.html 中自动化
+- [x] 打开 `test.html` → 所有 ✓ 通过，无 ✗ 失败 — 用户经部署站点验证通过
 
 ## 许可证
 

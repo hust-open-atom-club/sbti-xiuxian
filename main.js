@@ -274,7 +274,7 @@
                 current = {
                     displayName: trimmed.substring(3).trim(),
                     key: null, 品阶: null, 属性: null, 前缀: null, 结果代码: null,
-                    签文: '', 推荐功法: [], 画像: {}
+                    签文: '', 资质解读: '', 推荐功法: [], 功法解读: '', 画像: {}
                 };
                 section = 'meta';
                 continue;
@@ -284,7 +284,7 @@
 
             if (trimmed.startsWith('### ')) {
                 const name = trimmed.substring(4).trim();
-                if (name === '签文' || name === '推荐功法' || name === '画像') {
+                if (name === '签文' || name === '资质解读' || name === '推荐功法' || name === '功法解读' || name === '画像') {
                     section = name;
                 } else {
                     section = null;
@@ -293,8 +293,9 @@
             }
 
             if (trimmed === '') {
-                if (section === '签文' && current.签文 && !current.签文.endsWith('\n\n')) {
-                    current.签文 += '\n\n';
+                if ((section === '签文' || section === '资质解读' || section === '功法解读') &&
+                    current[section] && !current[section].endsWith('\n\n')) {
+                    current[section] += '\n\n';
                 }
                 continue;
             }
@@ -342,15 +343,15 @@
                 }
             }
 
-            if (section === '签文') {
-                const sep = (current.签文 && !current.签文.endsWith('\n\n')) ? ' ' : '';
-                current.签文 += sep + trimmed;
+            if (section === '签文' || section === '资质解读' || section === '功法解读') {
+                var sep = (current[section] && !current[section].endsWith('\n\n')) ? ' ' : '';
+                current[section] += sep + trimmed;
                 continue;
             }
 
             if (section === '推荐功法') {
                 if (trimmed.charAt(0) === '-') {
-                    const item = trimmed.substring(1).trim();
+                    var item = trimmed.substring(1).trim();
                     if (item) current.推荐功法.push(item);
                 }
                 continue;
@@ -702,8 +703,8 @@
         if (!home) return;
         home.innerHTML =
             '<div class="home-hero">' +
-                '<h1>测一测你是什么灵根</h1>' +
-                '<p class="subtitle">凡人修仙传 · 16 题测出你在修仙界的资质品阶<br>数据完全本地计算，不回传</p>' +
+                '<h1>SBIT 测试，但修仙版</h1>' +
+                '<p class="subtitle">测测你的灵根和资质，能否走上修仙大道？<br>16 题测出你在修仙界的品阶 · 数据完全本地计算</p>' +
             '</div>' +
             '<button class="btn btn-primary" id="start-btn" type="button">开卷测灵根</button>' +
             '<div class="home-footer">华科开放原子开源俱乐部 出品</div>';
@@ -861,10 +862,16 @@
                     '<div class="wuxing-bars">' + wuxingBars + '</div>' +
                 '</div>' +
             '</div>' +
+            (r.资质解读 ? '<div class="result-section"><span class="label">资质解读</span>' +
+                escapeHtml(r.资质解读).split(/\n\n+/).map(function(p){return '<p class="fortune-text">' + p + '</p>';}).join('') +
+            '</div>' : '') +
             '<div class="result-section">' +
                 '<span class="label">推荐功法</span>' +
                 '<ul class="methods-list">' + methodsHtml + '</ul>' +
             '</div>' +
+            (r.功法解读 ? '<div class="result-section"><span class="label">功法解读</span>' +
+                escapeHtml(r.功法解读).split(/\n\n+/).map(function(p){return '<p class="fortune-text">' + p + '</p>';}).join('') +
+            '</div>' : '') +
             '<button class="result-code" id="result-code" type="button">' + escapeHtml(r.结果代码) + '</button>' +
             '<div class="result-actions">' +
                 '<button class="btn" id="retry-btn" type="button">再测一次</button>' +
@@ -980,8 +987,8 @@
             ]);
             state.questions   = parseQuestions(loaded[0]);
             state.resultsDict = parseResults(loaded[1]);
-            if (state.questions.length !== 16) {
-                console.warn('question count ' + state.questions.length + ', expected 16');
+            if (state.questions.length === 0) {
+                throw new Error('题库为空：data/questions.md 中未找到任何题目');
             }
             router.go('home');
             renderHome();

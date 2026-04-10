@@ -15,21 +15,41 @@
 <h1>灵根测试 · Unit / Integration / Content Lint</h1>
 <div id="results"></div>
 
+<!-- AC-5 sentinel sections: mirror production index.html structure so that
+     if main() accidentally runs, it will mutate these and the observer catches it -->
+<div id="__sentinel" style="display:none">
+    <section id="home" class="section"></section>
+    <section id="quiz" class="section"></section>
+    <section id="result" class="section"></section>
+    <section id="error" class="section"></section>
+</div>
+
 <!-- Must be set BEFORE loading main.js to prevent production bootstrap -->
 <script>
 window.LingenTest_SKIP_BOOTSTRAP = true;
-// AC-5 isolation instrumentation: count fetches that fire during main.js load
+
+// AC-5 isolation instrumentation: count fetches AND DOM mutations during main.js load
 window.__isolationFetchCount = 0;
 window.__origFetch = window.fetch;
 window.fetch = function () {
     window.__isolationFetchCount++;
     return window.__origFetch.apply(this, arguments);
 };
+
+window.__isolationMutationCount = 0;
+window.__isolationObserver = new MutationObserver(function (records) {
+    window.__isolationMutationCount += records.length;
+});
+window.__isolationObserver.observe(document.getElementById('__sentinel'), {
+    childList: true, subtree: true, characterData: true, attributes: true
+});
 </script>
 <script src="main.js"></script>
 <script>
-// Capture count before tests restore fetch and start making their own calls
+// Capture counts before tests restore fetch and start their own work
 window.__isolationFetchCountFinal = window.__isolationFetchCount;
+window.__isolationMutationCountFinal = window.__isolationMutationCount;
+window.__isolationObserver.disconnect();
 window.fetch = window.__origFetch;
 </script>
 <script>
@@ -169,12 +189,34 @@ window.fetch = window.__origFetch;
         }
     });
 
+    test('duplicate displayName → error', function () {
+        var md = '## Same\nkey: k1\n品阶: x\n属性: x\n前缀: x\n结果代码: C1\n### 签文\ntext\n### 推荐功法\n- a\n### 画像\n袍色: #aaa\n配饰: sword\n背景: rocks\n符文色: #bbb\n\n' +
+                 '## Same\nkey: k2\n品阶: x\n属性: x\n前缀: x\n结果代码: C2\n### 签文\ntext\n### 推荐功法\n- a\n### 画像\n袍色: #aaa\n配饰: sword\n背景: rocks\n符文色: #bbb\n\n' +
+                 '## 无根之人\nkey: default_default_default\n品阶: x\n属性: x\n前缀: x\n结果代码: DEF\n### 签文\ntext\n### 推荐功法\n- a\n### 画像\n袍色: #aaa\n配饰: nothing\n背景: blank\n符文色: #bbb';
+        assertThrows(function () { LT.parseResults(md); }, '重复');
+    });
+
+    test('invalid 背景 enum → error naming the value and entry', function () {
+        var md = '## T\nkey: t3\n品阶: x\n属性: x\n前缀: x\n结果代码: T\n### 签文\ntext\n### 推荐功法\n- a\n### 画像\n袍色: #aaa\n配饰: sword\n背景: underwater\n符文色: #bbb\n\n' +
+                 '## 无根之人\nkey: default_default_default\n品阶: x\n属性: x\n前缀: x\n结果代码: DEF\n### 签文\ntext\n### 推荐功法\n- a\n### 画像\n袍色: #aaa\n配饰: nothing\n背景: blank\n符文色: #bbb';
+        try { LT.parseResults(md); assert(false, 'should throw'); }
+        catch (e) {
+            assert(e.message.indexOf('underwater') !== -1, 'should name the invalid value');
+            assert(e.message.indexOf('T') !== -1 || e.message.indexOf('背景') !== -1, 'should reference entry or field');
+        }
+    });
+
     /* =============== AC-5 isolation test =============== */
     log('info', '<h2>AC-5 isolation</h2>');
 
     test('AC-5: loading main.js with SKIP_BOOTSTRAP caused zero fetches', function () {
         assert(window.__isolationFetchCountFinal === 0,
             'expected 0 fetches during main.js load, got ' + window.__isolationFetchCountFinal);
+    });
+
+    test('AC-5: loading main.js with SKIP_BOOTSTRAP caused zero DOM mutations in sentinel sections', function () {
+        assert(window.__isolationMutationCountFinal === 0,
+            'expected 0 DOM mutations in #home/#quiz/#result/#error during main.js load, got ' + window.__isolationMutationCountFinal);
     });
 
     /* =============== AC-8 renderPortrait config.image returns DOM node =============== */
